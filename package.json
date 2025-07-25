@@ -1,0 +1,20 @@
+{
+  "name": "postmessage-api-poc",
+  "version": "1.0.0",
+  "description": "PostMessage API Proof of Concept demonstrating cross-origin iframe communication",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8080"
+  },
+  "keywords": [
+    "postMessage",
+    "iframe",
+    "cross-origin",
+    "communication"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

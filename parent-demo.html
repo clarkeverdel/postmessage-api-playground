@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PostMessage API Demo - Parent Application</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        margin: 0;
+        background-color: #f8f9fa;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .container {
+        display: flex;
+        gap: 20px;
+        height: calc(100vh - 100px);
+      }
+      .iframe-container {
+        flex: 1;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+      .message-log {
+        flex: 1;
+        background-color: white;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+        padding: 15px;
+        overflow-y: auto;
+      }
+      .message-item {
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .message-type {
+        font-weight: bold;
+        color: #007bff;
+      }
+      .message-time {
+        color: #666;
+        font-size: 12px;
+      }
+      .message-payload {
+        margin-top: 5px;
+        font-family: monospace;
+        white-space: pre-wrap;
+        background-color: #e9ecef;
+        padding: 5px;
+        border-radius: 3px;
+      }
+      .controls {
+        margin-bottom: 20px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        margin-right: 10px;
+      }
+      button:hover {
+        background-color: #218838;
+      }
+      .clear-btn {
+        background-color: #dc3545;
+      }
+      .clear-btn:hover {
+        background-color: #c82333;
+      }
+      .info {
+        background-color: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Parent Application - PostMessage Listener</h1>
+
+    <div class="info">
+      This page embeds the third-party iframe and listens for postMessage
+      events. The messages will appear in the log on the right.
+    </div>
+
+    <div class="controls">
+      <button onclick="sendMessageToIframe()">Send Message to iframe</button>
+      <button onclick="clearLog()" class="clear-btn">Clear Log</button>
+    </div>
+
+    <div class="container">
+      <div class="iframe-container">
+        <iframe id="thirdPartyIframe" src="iframe-content.html"></iframe>
+      </div>
+
+      <div class="message-log" id="messageLog">
+        <h3>Message Log</h3>
+        <p>Waiting for messages from iframe...</p>
+      </div>
+    </div>
+
+    <script>
+      let messageCount = 0;
+      const messageLog = document.getElementById("messageLog");
+
+      // Listen for messages from iframe
+      window.addEventListener("message", (event) => {
+        // In production, verify event.origin
+        console.log("Received message:", event);
+
+        messageCount++;
+
+        // Create message display
+        const messageItem = document.createElement("div");
+        messageItem.className = "message-item";
+
+        const messageType = document.createElement("div");
+        messageType.className = "message-type";
+        messageType.textContent = `Message #${messageCount}: ${
+          event.data.type || "unknown"
+        }`;
+
+        const messageTime = document.createElement("div");
+        messageTime.className = "message-time";
+        messageTime.textContent = new Date().toLocaleString();
+
+        const messagePayload = document.createElement("div");
+        messagePayload.className = "message-payload";
+        messagePayload.textContent = JSON.stringify(event.data, null, 2);
+
+        messageItem.appendChild(messageType);
+        messageItem.appendChild(messageTime);
+        messageItem.appendChild(messagePayload);
+
+        // Clear initial message if this is the first message
+        if (messageCount === 1) {
+          messageLog.innerHTML = "<h3>Message Log</h3>";
+        }
+
+        messageLog.appendChild(messageItem);
+
+        // Scroll to bottom
+        messageLog.scrollTop = messageLog.scrollHeight;
+
+        // Example: Handle specific message types
+        if (event.data.type === "navigation-request") {
+          console.log("Navigation requested to:", event.data.payload.url);
+          // In a real app, you might handle navigation here
+        }
+
+        if (event.data.type === "auth-token") {
+          console.log("Auth token received:", event.data.payload.token);
+          // In a real app, you might store the token
+        }
+
+        if (event.data.type === "add-to-cart") {
+          console.log("Product added to cart:", event.data.payload);
+          // In a real app, you might:
+          // - Update cart state
+          // - Show cart notification
+          // - Send to analytics
+          // - Update cart count in UI
+          alert(
+            `Added to cart: ${event.data.payload.quantity}x ${event.data.payload.productName} (${event.data.payload.color}) - Total: $${event.data.payload.totalPrice}`
+          );
+        }
+      });
+
+      // Send a message back to iframe (demonstrating bidirectional communication)
+      function sendMessageToIframe() {
+        const iframe = document.getElementById("thirdPartyIframe");
+        const message = {
+          type: "parent-response",
+          timestamp: new Date().toISOString(),
+          payload: {
+            message: "Hello from parent!",
+            status: "acknowledged",
+            data: {
+              parentUrl: window.location.href,
+              userAgent: navigator.userAgent,
+            },
+          },
+        };
+
+        iframe.contentWindow.postMessage(message, "*");
+        console.log("Sent message to iframe:", message);
+      }
+
+      // Clear the message log
+      function clearLog() {
+        messageCount = 0;
+        messageLog.innerHTML =
+          "<h3>Message Log</h3><p>Waiting for messages from iframe...</p>";
+      }
+
+      // Optional: Update iframe source for testing with external URLs
+      // You can uncomment this and change the URL to test with your deployed version
+      // document.getElementById('thirdPartyIframe').src = 'https://your-vercel-app.vercel.app/iframe-content.html';
+    </script>
+  </body>
+</html>

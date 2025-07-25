@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PostMessage API Demo - Third Party Content</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f0f0f0;
+        margin: 0;
+      }
+      h1 {
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      .button-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        text-align: left;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .status {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .form-section {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: white;
+        border-radius: 4px;
+      }
+      input,
+      select {
+        margin: 5px 0;
+        padding: 5px;
+        width: 200px;
+      }
+      .hero-section {
+        width: 100%;
+        position: relative;
+        aspect-ratio: 16/8;
+
+        img {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+      .scroll-down-button {
+        position: absolute;
+        bottom: 8%;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero-section">
+      <img src="https://placehold.co/1920x1080" alt="placeholder" />
+      <button class="scroll-down-button" onclick="scrollDown()">
+        Go to playground
+      </button>
+    </section>
+    <h1>Third-Party Content (iframe)</h1>
+    <p>This page demonstrates various postMessage scenarios:</p>
+
+    <div class="button-container">
+      <button onclick="sendSimpleMessage()">Send Simple Text Message</button>
+      <button onclick="sendJSONData()">Send JSON Data (User Info)</button>
+      <button onclick="sendActionEvent()">
+        Send Action Event (Button Click)
+      </button>
+      <button onclick="sendNavigationRequest()">Request Navigation</button>
+      <button onclick="sendStatusUpdate()">Send Status Update</button>
+      <button onclick="sendErrorMessage()">Send Error Message</button>
+      <button onclick="sendAuthToken()">Send Auth Token</button>
+      <button onclick="sendCustomEvent()">
+        Send Custom Event with Metadata
+      </button>
+    </div>
+
+    <div class="form-section">
+      <h3>Add to cart</h3>
+      <form id="sampleForm">
+        <select id="productId">
+          <option value="">Select a product</option>
+          <option value="PROD-001">Widget Pro - $29.99</option>
+          <option value="PROD-002">Widget Plus - $49.99</option>
+          <option value="PROD-003">Widget Max - $99.99</option></select
+        ><br />
+        <input
+          type="number"
+          id="quantity"
+          placeholder="Quantity"
+          min="1"
+          value="1"
+        /><br />
+        <select id="color">
+          <option value="">Select color</option>
+          <option value="black">Black</option>
+          <option value="white">White</option>
+          <option value="blue">Blue</option></select
+        ><br />
+        <button type="button" onclick="addToCart()">Add to Cart</button>
+      </form>
+    </div>
+
+    <div class="status" id="status">
+      Ready to send messages to parent window
+    </div>
+
+    <script>
+      // Helper function to send messages
+      function sendMessage(data) {
+        const targetOrigin = "*"; // In production, specify exact origin
+        const message = {
+          timestamp: new Date().toISOString(),
+          source: "third-party-iframe",
+          ...data,
+        };
+
+        // Send to parent window
+        window.parent.postMessage(message, targetOrigin);
+
+        // Update status
+        document.getElementById("status").textContent = `Sent: ${
+          data.type
+        } at ${new Date().toLocaleTimeString()}`;
+      }
+
+      // Different message scenarios
+      function sendSimpleMessage() {
+        sendMessage({
+          type: "simple-message",
+          payload: "Hello from the third-party iframe!",
+        });
+      }
+
+      function sendJSONData() {
+        sendMessage({
+          type: "user-data",
+          payload: {
+            userId: "user123",
+            name: "John Doe",
+            email: "john@example.com",
+            preferences: {
+              theme: "dark",
+              notifications: true,
+            },
+          },
+        });
+      }
+
+      function sendActionEvent() {
+        sendMessage({
+          type: "user-action",
+          action: "button-click",
+          payload: {
+            buttonId: "action-button",
+            context: "demo-interaction",
+            metadata: {
+              clickCount: Math.floor(Math.random() * 10) + 1,
+            },
+          },
+        });
+      }
+
+      function sendNavigationRequest() {
+        sendMessage({
+          type: "navigation-request",
+          payload: {
+            url: "/dashboard",
+            target: "_blank",
+            params: {
+              ref: "iframe",
+              campaign: "demo",
+            },
+          },
+        });
+      }
+
+      function sendStatusUpdate() {
+        const statuses = ["loading", "ready", "processing", "complete"];
+        const randomStatus =
+          statuses[Math.floor(Math.random() * statuses.length)];
+
+        sendMessage({
+          type: "status-update",
+          payload: {
+            status: randomStatus,
+            progress: Math.floor(Math.random() * 100),
+            message: `Component is ${randomStatus}`,
+          },
+        });
+      }
+
+      function sendErrorMessage() {
+        sendMessage({
+          type: "error",
+          payload: {
+            code: "ERR_VALIDATION",
+            message: "Validation failed for user input",
+            details: {
+              field: "email",
+              reason: "Invalid format",
+            },
+          },
+        });
+      }
+
+      function sendAuthToken() {
+        sendMessage({
+          type: "auth-token",
+          payload: {
+            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            expiresIn: 3600,
+            refreshToken: "refresh_token_example",
+          },
+        });
+      }
+
+      function sendCustomEvent() {
+        sendMessage({
+          type: "custom-event",
+          eventName: "product-viewed",
+          payload: {
+            productId: "PROD-123",
+            productName: "Demo Product",
+            price: 99.99,
+            currency: "USD",
+            category: "Electronics",
+          },
+        });
+      }
+
+      function addToCart() {
+        const productSelect = document.getElementById("productId");
+        const selectedOption =
+          productSelect.options[productSelect.selectedIndex];
+
+        // Extract product name and price from the option text
+        const productText = selectedOption.text;
+        const productName = productText.split(" - ")[0];
+        const price = productText.match(/\$([0-9.]+)/)?.[1] || "0";
+
+        const cartData = {
+          productId: productSelect.value,
+          productName: productName,
+          quantity: parseInt(document.getElementById("quantity").value) || 1,
+          color: document.getElementById("color").value,
+          price: parseFloat(price),
+          currency: "USD",
+        };
+
+        // Validate required fields
+        if (!cartData.productId) {
+          alert("Please select a product");
+          return;
+        }
+
+        if (!cartData.color) {
+          alert("Please select a color");
+          return;
+        }
+
+        sendMessage({
+          type: "add-to-cart",
+          action: "cart-add",
+          payload: {
+            ...cartData,
+            totalPrice: cartData.price * cartData.quantity,
+            timestamp: new Date().toISOString(),
+          },
+        });
+
+        // Show success feedback
+        document.getElementById(
+          "status"
+        ).textContent = `Added ${cartData.quantity}x ${cartData.productName} (${cartData.color}) to cart`;
+      }
+
+      // Listen for messages from parent (optional bidirectional communication)
+      window.addEventListener("message", (event) => {
+        console.log("Received message from parent:", event.data);
+        document.getElementById(
+          "status"
+        ).textContent = `Received response: ${JSON.stringify(
+          event.data
+        ).substring(0, 50)}...`;
+      });
+
+      // Send a ready message when iframe loads
+      window.addEventListener("load", () => {
+        sendMessage({
+          type: "iframe-ready",
+          payload: {
+            version: "1.0.0",
+            capabilities: ["messaging", "forms", "events"],
+          },
+        });
+      });
+
+      function scrollDown() {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    </script>
+  </body>
+</html>

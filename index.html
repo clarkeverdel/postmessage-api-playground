@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PostMessage API POC</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+      }
+      h1 {
+        color: #333;
+        text-align: center;
+      }
+      .card {
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .link-container {
+        display: flex;
+        gap: 20px;
+        margin-top: 30px;
+      }
+      .link-card {
+        flex: 1;
+        background-color: #007bff;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+      }
+      .link-card:hover {
+        background-color: #0056b3;
+      }
+      .link-card h3 {
+        margin: 0 0 10px 0;
+      }
+      code {
+        background-color: #f4f4f4;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+      .note {
+        background-color: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+        padding: 15px;
+        border-radius: 4px;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>PostMessage API Proof of Concept</h1>
+
+    <div class="card">
+      <h2>Overview</h2>
+      <p>
+        This POC demonstrates how the postMessage API enables secure
+        cross-origin communication between a parent window and an embedded
+        iframe.
+      </p>
+
+      <h3>What's included:</h3>
+      <ul>
+        <li>
+          <strong>iframe Content Page</strong> - The third-party page that sends
+          messages
+        </li>
+        <li>
+          <strong>Parent Demo Page</strong> - Your application that embeds the
+          iframe and receives messages
+        </li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Message Types Demonstrated</h2>
+      <ul>
+        <li>Simple text messages</li>
+        <li>JSON data payloads (user information, preferences)</li>
+        <li>Action events (button clicks, user interactions)</li>
+        <li>Navigation requests</li>
+        <li>Status updates (loading, ready, processing)</li>
+        <li>Error messages with details</li>
+        <li>Authentication tokens</li>
+        <li>Custom events with metadata</li>
+        <li>Form data submissions</li>
+        <li>E-commerce actions (Add to Cart)</li>
+      </ul>
+    </div>
+
+    <div class="link-container">
+      <a href="parent-demo.html" class="link-card">
+        <h3>Open Parent Demo</h3>
+        <p>Test the full integration locally</p>
+      </a>
+      <a href="iframe-content.html" class="link-card">
+        <h3>View iframe Content</h3>
+        <p>See the third-party page directly</p>
+      </a>
+    </div>
+
+    <div class="note">
+      <h3>Deployment Notes</h3>
+      <p>
+        Once deployed to Vercel, you can update the iframe source in your
+        application to point to:
+      </p>
+      <code>https://your-app-name.vercel.app/iframe-content.html</code>
+      <p>Remember to implement proper origin validation in production!</p>
+    </div>
+  </body>
+</html>
