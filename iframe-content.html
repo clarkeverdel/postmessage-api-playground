@@ -126,9 +126,9 @@
       </form>
     </div>
 
-    <div class="status" id="status">
+    <pre class="status" id="status">
       Ready to send messages to parent window
-    </div>
+    </pre>
 
     <script>
       // Helper function to send messages
@@ -306,8 +306,10 @@
         document.getElementById(
           "status"
         ).textContent = `Received response: ${JSON.stringify(
-          event.data
-        ).substring(0, 50)}...`;
+          event.data,
+          null,
+          2
+        )}`;
       });
 
       // Send a ready message when iframe loads
