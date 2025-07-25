@@ -79,6 +79,10 @@
     </style>
   </head>
   <body>
+    <pre class="status" id="status">
+      Ready to send messages to parent window
+    </pre>
+
     <section class="hero-section">
       <img src="https://placehold.co/1920x1080" alt="placeholder" />
       <button class="scroll-down-button" onclick="scrollDown()">
@@ -128,10 +132,6 @@
         <button type="button" onclick="addToCart()">Add to Cart</button>
       </form>
     </div>
-
-    <pre class="status" id="status">
-      Ready to send messages to parent window
-    </pre>
 
     <script>
       // Helper function to send messages
@@ -357,6 +357,7 @@
 
       // Listen for height requests from parent
       window.addEventListener("message", (event) => {
+        console.log("Received message from parent:", event.data);
         if (event.data.type === "requestHeight") {
           sendHeight();
         }
