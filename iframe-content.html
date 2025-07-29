@@ -59,7 +59,7 @@
       .hero-section {
         width: 100%;
         position: relative;
-        aspect-ratio: 16/8;
+        aspect-ratio: 16/6;
 
         img {
           position: absolute;
@@ -72,17 +72,13 @@
       }
       .scroll-down-button {
         position: absolute;
-        bottom: 8%;
+        bottom: 15%;
         left: 50%;
         transform: translateX(-50%);
       }
     </style>
   </head>
   <body>
-    <pre class="status" id="status">
-      Ready to send messages to parent window
-    </pre>
-
     <section class="hero-section">
       <img src="https://placehold.co/1920x1080" alt="placeholder" />
       <button class="scroll-down-button" onclick="scrollDown()">
@@ -95,16 +91,9 @@
     <div class="button-container">
       <button onclick="sendSimpleMessage()">Send Simple Text Message</button>
       <button onclick="sendJSONData()">Send JSON Data (User Info)</button>
-      <button onclick="sendActionEvent()">
-        Send Action Event (Button Click)
-      </button>
       <button onclick="sendNavigationRequest()">Request Navigation</button>
-      <button onclick="sendStatusUpdate()">Send Status Update</button>
       <button onclick="sendErrorMessage()">Send Error Message</button>
       <button onclick="sendAuthToken()">Send Auth Token</button>
-      <button onclick="sendCustomEvent()">
-        Send Custom Event with Metadata
-      </button>
     </div>
 
     <div class="form-section">
@@ -132,6 +121,10 @@
         <button type="button" onclick="addToCart()">Add to Cart</button>
       </form>
     </div>
+
+    <pre class="status" id="status">
+      Ready to send messages to parent window
+    </pre>
 
     <script>
       // Helper function to send messages
@@ -175,45 +168,16 @@
         });
       }
 
-      function sendActionEvent() {
-        sendMessage({
-          type: "user-action",
-          action: "button-click",
-          payload: {
-            buttonId: "action-button",
-            context: "demo-interaction",
-            metadata: {
-              clickCount: Math.floor(Math.random() * 10) + 1,
-            },
-          },
-        });
-      }
-
       function sendNavigationRequest() {
         sendMessage({
           type: "navigation-request",
           payload: {
-            url: "/dashboard",
+            url: "/cart?cuid=1234567890",
             target: "_blank",
             params: {
               ref: "iframe",
               campaign: "demo",
             },
-          },
-        });
-      }
-
-      function sendStatusUpdate() {
-        const statuses = ["loading", "ready", "processing", "complete"];
-        const randomStatus =
-          statuses[Math.floor(Math.random() * statuses.length)];
-
-        sendMessage({
-          type: "status-update",
-          payload: {
-            status: randomStatus,
-            progress: Math.floor(Math.random() * 100),
-            message: `Component is ${randomStatus}`,
           },
         });
       }
@@ -239,20 +203,6 @@
             token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
             expiresIn: 3600,
             refreshToken: "refresh_token_example",
-          },
-        });
-      }
-
-      function sendCustomEvent() {
-        sendMessage({
-          type: "custom-event",
-          eventName: "product-viewed",
-          payload: {
-            productId: "PROD-123",
-            productName: "Demo Product",
-            price: 99.99,
-            currency: "USD",
-            category: "Electronics",
           },
         });
       }
@@ -315,17 +265,6 @@
         )}`;
       });
 
-      // Send a ready message when iframe loads
-      window.addEventListener("load", () => {
-        sendMessage({
-          type: "iframe-ready",
-          payload: {
-            version: "1.0.0",
-            capabilities: ["messaging", "forms", "events"],
-          },
-        });
-      });
-
       function scrollDown() {
         window.scrollTo({
           top: document.body.scrollHeight,
@@ -336,7 +275,7 @@
       // Content height communications
       // Inside the iframe content
       function sendHeight() {
-        const height = document.documentElement.scrollHeight;
+        const height = document.body.scrollHeight;
         window.parent.postMessage(
           {
             type: "resize",
@@ -357,7 +296,6 @@
 
       // Listen for height requests from parent
       window.addEventListener("message", (event) => {
-        console.log("Received message from parent:", event.data);
         if (event.data.type === "requestHeight") {
           sendHeight();
         }
