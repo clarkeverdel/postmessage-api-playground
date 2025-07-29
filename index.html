@@ -51,13 +51,17 @@
         border-radius: 3px;
         font-family: monospace;
       }
-      .note {
-        background-color: #fff3cd;
-        border: 1px solid #ffeaa7;
-        color: #856404;
-        padding: 15px;
+      .feature-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+      }
+      .feature-item {
+        background-color: #f8f9fa;
+        padding: 10px;
         border-radius: 4px;
-        margin-top: 20px;
+        border-left: 3px solid #007bff;
       }
     </style>
   </head>
@@ -69,57 +73,62 @@
       <p>
         This POC demonstrates how the postMessage API enables secure
         cross-origin communication between a parent window and an embedded
-        iframe.
+        iframe. The demo includes a comprehensive message logging system and
+        bidirectional communication capabilities.
       </p>
 
       <h3>What's included:</h3>
       <ul>
         <li>
           <strong>iframe Content Page</strong> - The third-party page that sends
-          messages
+          various types of messages
         </li>
         <li>
           <strong>Parent Demo Page</strong> - Your application that embeds the
-          iframe and receives messages
+          iframe, receives messages, and provides a real-time message log
         </li>
       </ul>
     </div>
 
     <div class="card">
       <h2>Message Types Demonstrated</h2>
-      <ul>
-        <li>Simple text messages</li>
-        <li>JSON data payloads (user information, preferences)</li>
-        <li>Action events (button clicks, user interactions)</li>
-        <li>Navigation requests</li>
-        <li>Status updates (loading, ready, processing)</li>
-        <li>Error messages with details</li>
-        <li>Authentication tokens</li>
-        <li>Custom events with metadata</li>
-        <li>Form data submissions</li>
-        <li>E-commerce actions (Add to Cart)</li>
-      </ul>
+      <div class="feature-list">
+        <div class="feature-item">
+          <strong>Navigation Requests</strong><br />
+          Handle URL navigation requests from iframe
+        </div>
+        <div class="feature-item">
+          <strong>Authentication Tokens</strong><br />
+          Receive and process auth tokens securely
+        </div>
+        <div class="feature-item">
+          <strong>E-commerce Actions</strong><br />
+          Add to cart functionality with product details
+        </div>
+        <div class="feature-item">
+          <strong>Error Handling</strong><br />
+          Comprehensive error messages with details
+        </div>
+        <div class="feature-item">
+          <strong>JSON Data Payloads</strong><br />
+          Structured data exchange between parent and iframe
+        </div>
+        <div class="feature-item">
+          <strong>Bidirectional Communication</strong><br />
+          Send messages back to iframe from parent
+        </div>
+      </div>
     </div>
 
     <div class="link-container">
       <a href="parent-demo.html" class="link-card">
         <h3>Open Parent Demo</h3>
-        <p>Test the full integration locally</p>
+        <p>Test the full integration with message logging</p>
       </a>
       <a href="iframe-content.html" class="link-card">
         <h3>View iframe Content</h3>
         <p>See the third-party page directly</p>
       </a>
-    </div>
-
-    <div class="note">
-      <h3>Deployment Notes</h3>
-      <p>
-        Once deployed to Vercel, you can update the iframe source in your
-        application to point to:
-      </p>
-      <code>https://your-app-name.vercel.app/iframe-content.html</code>
-      <p>Remember to implement proper origin validation in production!</p>
     </div>
   </body>
 </html>
